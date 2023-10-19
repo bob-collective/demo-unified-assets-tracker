@@ -1,22 +1,21 @@
 import { CTA, Flex, Span } from '@interlay/ui';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import truncateEthAddress from 'truncate-eth-address';
-import { useAccount } from 'wagmi';
+
 import { StyledHeader } from './Layout.styles';
+import { useConnect } from '../../hooks/useConnect';
 
 const Header = () => {
-  const { open } = useWeb3Modal();
-  const { address, isConnecting } = useAccount();
+  const { connect, evmAccount, bitcoinAddress } = useConnect();
 
   return (
     <StyledHeader elementType='header' alignItems='center' justifyContent='space-between'>
-        <CTA disabled={isConnecting} size='small' onPress={() => open()}>
-          {address ? (
+        <CTA size='small' onPress={() => connect()}>
+          {evmAccount ? (
             <Flex elementType='span' gap='spacing2'>
-              <Jazzicon diameter={20} seed={jsNumberForAddress(address)} />
+              <Jazzicon diameter={20} seed={jsNumberForAddress(evmAccount)} />
               <Span style={{ color: 'inherit' }} size='s' color='tertiary'>
-                {truncateEthAddress(address)}
+                {truncateEthAddress(evmAccount)} | bitcoin: {bitcoinAddress}
               </Span>
             </Flex>
           ) : (

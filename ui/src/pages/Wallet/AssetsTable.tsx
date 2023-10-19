@@ -5,8 +5,6 @@ import { Order } from '../../types/orders';
 import { toBaseAmount } from '../../utils/currencies';
 import { formatUSD } from '../../utils/format';
 import { isBtcOrder } from '../../utils/orders';
-import { CancelOrderModal } from '../CancelOrderModal';
-import { FillOrderModal } from '../FillOrderModal';
 
 const AmountCell = ({ amount, valueUSD, ticker }: { amount: string; ticker: string; valueUSD?: number }) => (
   <Flex alignItems='flex-start' direction='column'>
@@ -30,14 +28,14 @@ const AssetCell = ({ name, tickers }: { name: string; tickers: string[] }) => (
 
 enum OrdersTableColumns {
   ASSET = 'asset',
-  PRICE_PER_UNIT = 'balance',
+  BALANCE = 'balance',
   ACTION = 'action'
 }
 
 type OrdersTableRow = {
   id: string;
   [OrdersTableColumns.ASSET]: ReactNode;
-  [OrdersTableColumns.PRICE_PER_UNIT]: ReactNode;
+  [OrdersTableColumns.BALANCE]: ReactNode;
   [OrdersTableColumns.ACTION]: ReactNode;
 };
 
@@ -72,8 +70,7 @@ const OrdersTable = ({
 
   const columns = [
     { name: 'Asset', id: OrdersTableColumns.ASSET },
-    { name: 'Price per unit', id: OrdersTableColumns.PRICE_PER_UNIT },
-    { name: 'Available to buy', id: OrdersTableColumns.AVAILABLE_TO_BUY },
+    { name: 'Balance', id: OrdersTableColumns.BALANCE },
     { name: '', id: OrdersTableColumns.ACTION }
   ];
 
@@ -91,13 +88,7 @@ const OrdersTable = ({
                     tickers={[order.offeringCurrency.ticker, order.askingCurrency.ticker]}
                   />
                 ),
-                pricePerUnit: <AmountCell amount={order.price.toString()} ticker={order.askingCurrency.ticker} />,
-                availableToBuy: (
-                  <AmountCell
-                    amount={toBaseAmount(order.availableLiquidity, order.offeringCurrency.ticker)}
-                    ticker={order.offeringCurrency.ticker}
-                  />
-                ),
+                balance: <AmountCell amount={order.price.toString()} ticker={order.askingCurrency.ticker} />,
                 action: (
                   <Flex justifyContent='flex-end' gap='spacing4' alignItems='center'>
                     {order.isOwnerOfOrder ? (
@@ -122,24 +113,6 @@ const OrdersTable = ({
       <Card>
         <Table {...props} columns={columns} rows={rows} />
       </Card>
-      {orderModal.order && (
-        <FillOrderModal
-          isOpen={orderModal.isOpen && orderModal.type === 'fill'}
-          onClose={handleCloseAnyOrderModal}
-          onFillBuyBtc={onFillBuyBtc}
-          refetchOrders={refetchOrders}
-          refetchAcceptedBtcOrders={refetchAcceptedBtcOrders}
-          order={orderModal.order}
-        />
-      )}
-      {orderModal.order && (
-        <CancelOrderModal
-          isOpen={orderModal.isOpen && orderModal.type === 'cancel'}
-          onClose={handleCloseAnyOrderModal}
-          order={orderModal.order}
-          refetchOrders={refetchOrders}
-        />
-      )}
     </div>
   );
 };
