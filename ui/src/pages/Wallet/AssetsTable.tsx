@@ -1,10 +1,11 @@
 import { theme } from '@interlay/theme';
 import { CTA, Card, Flex, Span, Table, TableProps, TokenStack } from '@interlay/ui';
 import { ReactNode, useMemo, useState } from 'react';
-import { Order } from '../../types/orders';
-import { toBaseAmount } from '../../utils/currencies';
 import { formatUSD } from '../../utils/format';
-import { isBtcOrder } from '../../utils/orders';
+import { Balance, Balances } from '../../hooks/useBalances';
+import { AssetModal } from './AssetModal';
+import { HexString } from '../../types';
+import { toBaseAmountFromDecimals } from '../../utils/currencies';
 
 const AmountCell = ({ amount, valueUSD, ticker }: { amount: string; ticker: string; valueUSD?: number }) => (
   <Flex alignItems='flex-start' direction='column'>
@@ -40,33 +41,35 @@ type OrdersTableRow = {
 };
 
 type Props = {
-  orders: Array<Order> | undefined;
-  refetchOrders: () => void;
-  refetchAcceptedBtcOrders: () => void;
-  onFillBuyBtc?: (order: Order) => void;
+  balances: Balances | undefined;
+  evmAccount?: HexString;
+  bitcoinAddress?: string;
+  refetchBalances: () => void;
 };
 
 type InheritAttrs = Omit<TableProps, keyof Props | 'columns' | 'rows'>;
 
-type OrdersTableProps = Props & InheritAttrs;
+type AssetsTableProps = Props & InheritAttrs;
 
-const OrdersTable = ({
-  orders,
-  refetchOrders,
-  refetchAcceptedBtcOrders,
-  onFillBuyBtc,
-  ...props
-}: OrdersTableProps): JSX.Element => {
-  const [orderModal, setOrderModal] = useState<{ isOpen: boolean; type: 'fill' | 'cancel'; order?: Order }>({
+const AssetsTable = ({ balances, refetchBalances, evmAccount, bitcoinAddress, ...props }: AssetsTableProps): JSX.Element => {
+  const [assetModal, setAssetModal] = useState<{
+    isOpen: boolean;
+    type: 'send' | 'receive';
+    ticker: string;
+    balance?: Balance;
+  }>({
     isOpen: false,
-    type: 'fill'
+    type: 'send',
+    ticker: 'BTC'
   });
 
-  const handleOpenFillOrderModal = (order: Order) => setOrderModal({ isOpen: true, type: 'fill', order });
+  const handleOpenReceiveAssetModal = (ticker: string, balance: Balance) =>
+    setAssetModal({ isOpen: true, type: 'receive', ticker, balance });
 
-  const handleOpenCancelOrderModal = (order: Order) => setOrderModal({ isOpen: true, type: 'cancel', order });
+  const handleOpenSendAssetModal = (ticker: string, balance: Balance) =>
+    setAssetModal({ isOpen: true, type: 'send', ticker, balance });
 
-  const handleCloseAnyOrderModal = () => setOrderModal((s) => ({ ...s, isOpen: false }));
+  const handleCloseModal = () => setAssetModal((s) => ({ ...s, isOpen: false }));
 
   const columns = [
     { name: 'Asset', id: OrdersTableColumns.ASSET },
@@ -76,36 +79,26 @@ const OrdersTable = ({
 
   const rows: OrdersTableRow[] = useMemo(
     () =>
-      orders
-        ? orders
-            .filter((order) => !(isBtcOrder(order) && order.deadline !== undefined))
-            .map((order) => {
-              return {
-                id: `${order.offeringCurrency.ticker}-${order.askingCurrency.ticker}-${order.id.toString()}`,
-                asset: (
-                  <AssetCell
-                    name={order.offeringCurrency.ticker}
-                    tickers={[order.offeringCurrency.ticker, order.askingCurrency.ticker]}
-                  />
-                ),
-                balance: <AmountCell amount={order.price.toString()} ticker={order.askingCurrency.ticker} />,
-                action: (
-                  <Flex justifyContent='flex-end' gap='spacing4' alignItems='center'>
-                    {order.isOwnerOfOrder ? (
-                      <CTA variant='secondary' onPress={() => handleOpenCancelOrderModal(order)} size='small'>
-                        Cancel order
-                      </CTA>
-                    ) : (
-                      <CTA onPress={() => handleOpenFillOrderModal(order)} size='small'>
-                        Fill Order
-                      </CTA>
-                    )}
-                  </Flex>
-                )
-              };
-            })
+      balances
+        ? Object.entries(balances).map(([ticker, balance]) => {
+            return {
+              id: `${ticker}-${balance.type}`,
+              asset: <AssetCell name={ticker} tickers={[ticker]} />,
+              balance: <AmountCell amount={toBaseAmountFromDecimals(balance.amount, balance.decimals)} ticker={ticker} />,
+              action: (
+                <Flex justifyContent='flex-end' gap='spacing4' alignItems='center'>
+                  <CTA onPress={() => handleOpenSendAssetModal(ticker, balance)} size='small'>
+                    Send
+                  </CTA>
+                  <CTA onPress={() => handleOpenReceiveAssetModal(ticker, balance)} size='small'>
+                    Receive
+                  </CTA>
+                </Flex>
+              )
+            };
+          })
         : [],
-    [orders]
+    [balances]
   );
 
   return (
@@ -113,9 +106,21 @@ const OrdersTable = ({
       <Card>
         <Table {...props} columns={columns} rows={rows} />
       </Card>
+      {assetModal.balance && (
+        <AssetModal
+          isOpen={assetModal.isOpen}
+          type={assetModal.type}
+          onClose={handleCloseModal}
+          refetchBalances={refetchBalances}
+          ticker={assetModal.ticker}
+          balance={assetModal.balance}
+          evmAccount={evmAccount}
+          bitcoinAddress={bitcoinAddress}
+        />
+      )}
     </div>
   );
 };
 
-export { OrdersTable };
-export type { OrdersTableProps };
+export { AssetsTable };
+export type { AssetsTableProps };

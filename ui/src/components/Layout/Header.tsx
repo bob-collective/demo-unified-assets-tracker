@@ -3,10 +3,9 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import truncateEthAddress from 'truncate-eth-address';
 
 import { StyledHeader } from './Layout.styles';
-import { useConnect } from '../../hooks/useConnect';
 
-const Header = () => {
-  const { connect, evmAccount, bitcoinAddress } = useConnect();
+const Header = ({evmAccount, connect, bitcoinAddress}) => {
+
 
   return (
     <StyledHeader elementType='header' alignItems='center' justifyContent='space-between'>

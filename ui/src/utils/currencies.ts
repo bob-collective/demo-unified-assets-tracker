@@ -34,6 +34,10 @@ const toBaseAmount = (amount: bigint, ticker: CurrencyTicker): string => {
   return (Number(amount) / 10 ** decimals).toString();
 };
 
+export const toBaseAmountFromDecimals = (amount: bigint, decimals: number): string => {
+  return (Number(amount) / 10 ** decimals).toString();
+};
+
 const isErc20Currency = (currency: Currency): currency is Erc20Currency =>
   (currency as Erc20Currency)?.address !== undefined;
 
