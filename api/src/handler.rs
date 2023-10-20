@@ -1,4 +1,4 @@
-use crate::response::{EthBalance, TokenInfo};
+use crate::response::{BtcBalance, EthBalance, TokenInfo};
 use actix_web::{post, web, HttpResponse, Responder};
 use num_bigint::BigUint;
 use num_traits::Num;
@@ -129,11 +129,41 @@ async fn get_eth_balance_on_l2(address: String) -> impl Responder {
     }
 }
 
+#[post("/btcbalance")]
+async fn btc_balance(address: String) -> impl Responder {
+    let url = "https://explorerl2-fluffy-bob-7mjgi9pmtg.t.conduit.xyz/api?module=account&action=eth_get_balance&address=".to_string() + &address;
+
+    let btc_balance = BtcBalance {
+        ticker: String::from("BTC"),
+        balance: String::from("18000"),
+        balance_in_usd: String::from("26000"),
+        network: String::from("testnet"),
+    };
+    HttpResponse::Ok().json(btc_balance)
+}
+
+#[post("/brcbalance")]
+async fn brc20_balance(address: String) -> impl Responder {
+    let url = "https://explorerl2-fluffy-bob-7mjgi9pmtg.t.conduit.xyz/api?module=account&action=eth_get_balance&address=".to_string() + &address;
+    let mut vec = Vec::new();
+    let balance = BtcBalance {
+        ticker: String::from("ORDI"),
+        balance: String::from("18000"),
+        balance_in_usd: String::from("26000"),
+        network: String::from("testnet"),
+    };
+    vec.push(balance.clone());
+    vec.push(balance);
+    HttpResponse::Ok().json(vec)
+}
+
 pub fn config(conf: &mut web::ServiceConfig) {
     let scope = web::scope("/api")
         .service(get_token_balance_on_l1)
         .service(get_eth_balance_on_l1)
         .service(get_token_balance_on_l2)
-        .service(get_eth_balance_on_l2);
+        .service(get_eth_balance_on_l2)
+        .service(brc20_balance)
+        .service(btc_balance);
     conf.service(scope);
 }

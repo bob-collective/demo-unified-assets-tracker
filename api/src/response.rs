@@ -8,6 +8,15 @@ pub struct EthBalance {
     pub network: String,
 }
 
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct BtcBalance {
+    pub ticker: String,
+    pub balance: String,
+    pub balance_in_usd: String,
+    pub network: String,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenInfo {
     pub balance: String,
