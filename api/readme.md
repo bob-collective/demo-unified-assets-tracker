@@ -1,5 +1,5 @@
-## Command Run Server on local host
-- The server runns on `localhost:8000`
+## Command To Run Server on local host
+- The server runs on `localhost:8000`
 ```shell
 cd api
 cargo run
