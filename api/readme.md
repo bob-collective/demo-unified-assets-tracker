@@ -63,7 +63,7 @@ curl --location --request POST 'http://localhost:8000/api/tokenbalancel1' \
 ```json
 [
     {
-        "balance": 2999900000000,
+        "balance": "2999900000000",
         "contract_address": "0x4f01078121e90915f9f1448de4b3c2515b5e2f3b",
         "decimals": 8,
         "name": "ZBTC",
@@ -89,7 +89,7 @@ curl --location --request POST 'http://localhost:8000/api/tokenbalancel2' \
 ```json
 [
     {
-        "balance": 2999900000000,
+        "balance": "2999900000000",
         "contract_address": "0x4f01078121e90915f9f1448de4b3c2515b5e2f3b",
         "decimals": 8,
         "name": "ZBTC",
@@ -97,5 +97,64 @@ curl --location --request POST 'http://localhost:8000/api/tokenbalancel2' \
         "token_type": "ERC-20",
         "balance_in_usd": ""
     }
+    {
+        "balance": "30000100000",
+        "contract_address": "0x3c252953224948e441aafde7b391685201ccd3bc",
+        "decimals": "6",
+        "name": "Tether USD",
+        "symbol": "USDT",
+        "token_type": "ERC-20",
+        "balance_in_usd": ""
+    }
+
 ]
 ```
+
+### API Endpoint: `/api/btcbalance`
+
+**HTTP Method:** `POST`
+
+**Request Example:**
+
+```shell
+curl --location --request POST 'http://localhost:8000/api/btcbalance' \
+--header 'Content-Type: text/plain' \
+--data-raw 'bc1pxaneaf3w4d27hl2y93fuft2xk6m4u3wc4rafevc6slgd7f5tq2dqyfgy06'
+```
+
+```json
+{
+    "balance": "18000",
+    "balance_in_usd": "26000",
+    "network": "testnet"
+}
+```
+
+### API Endpoint: `/api/brcbalance`
+
+**HTTP Method:** `POST`
+
+**Request Example:**
+
+```shell
+curl --location --request POST 'http://localhost:8000/api/brcbalance' \
+--header 'Content-Type: text/plain' \
+--data-raw 'bc1pxaneaf3w4d27hl2y93fuft2xk6m4u3wc4rafevc6slgd7f5tq2dqyfgy06'
+```
+
+
+```json
+[
+    {
+        "ticker": "ORDI",
+        "balance": "18000",
+        "balance_in_usd": "26000",
+        "network": "testnet"
+    },
+    {
+        "ticker": "ORDI",
+        "balance": "18000",
+        "balance_in_usd": "26000",
+        "network": "testnet"
+    }
+]```
