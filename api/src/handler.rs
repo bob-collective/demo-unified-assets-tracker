@@ -1,5 +1,7 @@
 use crate::response::{EthBalance, TokenInfo};
 use actix_web::{post, web, HttpResponse, Responder};
+use num_bigint::BigUint;
+use num_traits::Num;
 
 #[post("/tokenbalancel2")]
 async fn get_token_balance_on_l2(address: String) -> impl Responder {
@@ -73,9 +75,6 @@ async fn get_token_balance_on_l1(address: String) -> impl Responder {
     }
 }
 
-use num_bigint::BigUint;
-use num_traits::Num;
-// use num_traits::Num;
 #[post("/ethbalancel1")]
 async fn get_eth_balance_on_l1(address: String) -> impl Responder {
     // Construct the complete URL
