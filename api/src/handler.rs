@@ -93,21 +93,25 @@ async fn get_eth_balance_on_l1(address: String) -> impl Responder {
 
     // Send an HTTP GET request
     if let Ok(response_result) = reqwest::get(&url).await {
-        let json_result: serde_json::Value = response_result.json().await.unwrap();
-
-        let hex_balance = json_result["result"].to_string();
-        let hex_balance_trimmed = hex_balance.trim_matches('\\').trim_matches('\"');
-        let hex_balance_trimmed = hex_balance_trimmed.trim_start_matches("0x");
-        if let Ok(eth_balance) = BigUint::from_str_radix(hex_balance_trimmed, 16) {
-            let eth_balance = EthBalance {
-                balance: eth_balance.to_string(),
-                balance_in_usd: String::new(),
-                network: String::from("l1-bob"),
-            };
-            return HttpResponse::Ok().json(eth_balance);
-        } else {
-            return HttpResponse::BadRequest().into();
+        if let Ok(json_result) = response_result.json::<serde_json::Value>().await {
+            let hex_balance = json_result["result"].to_string();
+            if hex_balance == String::from("null") {
+                return HttpResponse::Ok().json(EthBalance::default());
+            }
+            let hex_balance_trimmed = hex_balance.trim_matches('\\').trim_matches('\"');
+            let hex_balance_trimmed = hex_balance_trimmed.trim_start_matches("0x");
+            if let Ok(eth_balance) = BigUint::from_str_radix(hex_balance_trimmed, 16) {
+                let eth_balance = EthBalance {
+                    balance: eth_balance.to_string(),
+                    balance_in_usd: String::new(),
+                    network: String::from("l1-bob"),
+                };
+                return HttpResponse::Ok().json(eth_balance);
+            } else {
+                return HttpResponse::InternalServerError().json("Conversion Error");
+            }
         }
+        return HttpResponse::InternalServerError().json("Serialization error");
     } else {
         return HttpResponse::BadRequest().into();
     }
@@ -120,21 +124,25 @@ async fn get_eth_balance_on_l2(address: String) -> impl Responder {
 
     // Send an HTTP GET request
     if let Ok(response_result) = reqwest::get(&url).await {
-        let json_result: serde_json::Value = response_result.json().await.unwrap();
-
-        let hex_balance = json_result["result"].to_string();
-        let hex_balance_trimmed = hex_balance.trim_matches('\\').trim_matches('\"');
-        let hex_balance_trimmed = hex_balance_trimmed.trim_start_matches("0x");
-        if let Ok(eth_balance) = BigUint::from_str_radix(hex_balance_trimmed, 16) {
-            let eth_balance = EthBalance {
-                balance: eth_balance.to_string(),
-                balance_in_usd: String::new(),
-                network: String::from("l2-bob"),
-            };
-            return HttpResponse::Ok().json(eth_balance);
-        } else {
-            return HttpResponse::BadRequest().into();
+        if let Ok(json_result) = response_result.json::<serde_json::Value>().await {
+            let hex_balance = json_result["result"].to_string();
+            if hex_balance == String::from("null") {
+                return HttpResponse::Ok().json(EthBalance::default());
+            }
+            let hex_balance_trimmed = hex_balance.trim_matches('\\').trim_matches('\"');
+            let hex_balance_trimmed = hex_balance_trimmed.trim_start_matches("0x");
+            if let Ok(eth_balance) = BigUint::from_str_radix(hex_balance_trimmed, 16) {
+                let eth_balance = EthBalance {
+                    balance: eth_balance.to_string(),
+                    balance_in_usd: String::new(),
+                    network: String::from("l2-bob"),
+                };
+                return HttpResponse::Ok().json(eth_balance);
+            } else {
+                return HttpResponse::InternalServerError().json("Conversion Error");
+            }
         }
+        return HttpResponse::InternalServerError().json("Serialization error");
     } else {
         return HttpResponse::BadRequest().into();
     }

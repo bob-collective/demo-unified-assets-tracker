@@ -7,6 +7,15 @@ pub struct EthBalance {
     pub balance_in_usd: String,
     pub network: String,
 }
+impl EthBalance {
+    pub fn default() -> Self {
+        EthBalance {
+            balance: String::new(),
+            balance_in_usd: String::new(),
+            network: String::from("l1-bob"),
+        }
+    }
+}
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
