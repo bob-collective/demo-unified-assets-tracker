@@ -11,31 +11,36 @@ async fn get_token_balance_on_l2(address: String) -> impl Responder {
     let mut vec = Vec::new();
     // Send an HTTP GET request
     if let Ok(response_result) = reqwest::get(&url).await {
-        let json_result: serde_json::Value = response_result.json().await.unwrap();
-
-        for item in json_result["result"].as_array().unwrap_or(&vec![]) {
-            let balance = &item["balance"];
-            let contract_address = &item["contractAddress"];
-            let decimals = &item["decimals"];
-            let name = &item["name"];
-            let symbol = &item["symbol"];
-            let token_type = &item["type"];
-            // add usd price as well
-
-            let token_info: TokenInfo = TokenInfo {
-                balance: balance.to_string(),
-                contract_address: contract_address.to_string(),
-                decimals: decimals.to_string(),
-                name: name.to_string(),
-                symbol: symbol.to_string(),
-                token_type: token_type.to_string(),
-                balance_in_usd: String::new(),
-            };
-            vec.push(token_info)
+        let http_response = HttpResponse::new(response_result.status());
+        if http_response.error().is_some() {
+            return http_response;
         }
-        return HttpResponse::Ok().json(vec);
+        if let Ok(json_result) = response_result.json::<serde_json::Value>().await {
+            for item in json_result["result"].as_array().unwrap_or(&vec![]) {
+                let balance = &item["balance"];
+                let contract_address = &item["contractAddress"];
+                let decimals = &item["decimals"];
+                let name = &item["name"];
+                let symbol = &item["symbol"];
+                let token_type = &item["type"];
+                // add usd price as well
+
+                let token_info: TokenInfo = TokenInfo {
+                    balance: balance.to_string().replace("\"", ""),
+                    contract_address: contract_address.to_string().replace("\"", ""),
+                    decimals: decimals.to_string().replace("\"", ""),
+                    name: name.to_string().replace("\"", ""),
+                    symbol: symbol.to_string().replace("\"", ""),
+                    token_type: token_type.to_string().replace("\"", ""),
+                    balance_in_usd: String::new(),
+                };
+                vec.push(token_info);
+            }
+            return HttpResponse::Ok().json(vec);
+        }
+        return HttpResponse::InternalServerError().json("Serialization error");
     } else {
-        return HttpResponse::BadRequest().into();
+        return HttpResponse::NotFound().into();
     }
 }
 
@@ -47,31 +52,37 @@ async fn get_token_balance_on_l1(address: String) -> impl Responder {
     let mut vec = Vec::new();
     // Send an HTTP GET request
     if let Ok(response_result) = reqwest::get(&url).await {
-        let json_result: serde_json::Value = response_result.json().await.unwrap();
-
-        for item in json_result["result"].as_array().unwrap_or(&vec![]) {
-            let balance = &item["balance"];
-            let contract_address = &item["contractAddress"];
-            let decimals = &item["decimals"];
-            let name = &item["name"];
-            let symbol = &item["symbol"];
-            let token_type = &item["type"];
-            // add usd price as well
-
-            let token_info: TokenInfo = TokenInfo {
-                balance: balance.to_string(),
-                contract_address: contract_address.to_string(),
-                decimals: decimals.to_string(),
-                name: name.to_string(),
-                symbol: symbol.to_string(),
-                token_type: token_type.to_string(),
-                balance_in_usd: String::new(),
-            };
-            vec.push(token_info)
+        let http_response = HttpResponse::new(response_result.status());
+        if http_response.error().is_some() {
+            return http_response;
         }
-        return HttpResponse::Ok().json(vec);
+        // panic!("response: {:?}", response_result.json::<serde_json::Value>().await);
+        if let Ok(json_result) = response_result.json::<serde_json::Value>().await {
+            for item in json_result["result"].as_array().unwrap_or(&vec![]) {
+                let balance = &item["balance"];
+                let contract_address = &item["contractAddress"];
+                let decimals = &item["decimals"];
+                let name = &item["name"];
+                let symbol = &item["symbol"];
+                let token_type = &item["type"];
+                // add usd price as well
+
+                let token_info: TokenInfo = TokenInfo {
+                    balance: balance.to_string().replace("\"", ""),
+                    contract_address: contract_address.to_string().replace("\"", ""),
+                    decimals: decimals.to_string().replace("\"", ""),
+                    name: name.to_string().replace("\"", ""),
+                    symbol: symbol.to_string().replace("\"", ""),
+                    token_type: token_type.to_string().replace("\"", ""),
+                    balance_in_usd: String::new(),
+                };
+                vec.push(token_info);
+            }
+            return HttpResponse::Ok().json(vec);
+        }
+        return HttpResponse::InternalServerError().json("Serialization error");
     } else {
-        return HttpResponse::BadRequest().into();
+        return HttpResponse::NotFound().into();
     }
 }
 
