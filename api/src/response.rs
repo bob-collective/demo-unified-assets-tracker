@@ -7,6 +7,7 @@ pub struct EthBalance {
     pub balance_in_usd: String,
     pub network: String,
 }
+
 impl EthBalance {
     pub fn default() -> Self {
         EthBalance {
@@ -24,6 +25,25 @@ pub struct BtcBalance {
     pub balance: String,
     pub balance_in_usd: String,
     pub network: String,
+}
+
+impl BtcBalance {
+    pub fn new(balance: String,balance_in_usd:String ) -> Self {
+        BtcBalance {
+            ticker: "100000000".to_string(),
+            balance,
+            balance_in_usd,
+            network: String::from("testnet"),
+        }
+    }
+    pub fn default() -> Self {
+        BtcBalance {
+            ticker: "100000000".to_string(),
+            balance: String::new(),
+            balance_in_usd: String::new(),
+            network: String::from("testnet"),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

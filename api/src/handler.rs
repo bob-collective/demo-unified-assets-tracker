@@ -150,30 +150,52 @@ async fn get_eth_balance_on_l2(address: String) -> impl Responder {
 
 #[post("/btcbalance")]
 async fn btc_balance(address: String) -> impl Responder {
-    let url = "https://explorerl2-fluffy-bob-7mjgi9pmtg.t.conduit.xyz/api?module=account&action=eth_get_balance&address=".to_string() + &address;
 
-    let btc_balance = BtcBalance {
-        ticker: String::from("BTC"),
-        balance: String::from("18000"),
-        balance_in_usd: String::from("26000"),
-        network: String::from("testnet"),
-    };
-    HttpResponse::Ok().json(btc_balance)
+    // Fixme change to testnet
+    let url = "https://open-api.unisat.io/v1/indexer/address/".to_string() + &address + "/balance";
+    let token = "4f35426215d7231021bf5c32a1187f86ef5a57eaf2655c28935868f05bb7a677".to_string();
+
+    if let Ok(response_result) =  reqwest::Client::new()
+        .get(&url)
+        .header("Authorization", format!("Bearer {}", token))
+        .send()
+        .await {
+
+        let http_response = HttpResponse::new(response_result.status());
+        if http_response.error().is_some() {
+            return http_response;
+        }
+
+        if let Ok(json_result) = response_result.json::<serde_json::Value>().await {
+            let balance = json_result["data"]["inscriptionSatoshi"].to_string();
+            if balance == String::from("null") {
+                return HttpResponse::Ok().json(BtcBalance::default());
+            }
+
+            let btc_balance = BtcBalance::new(
+                balance,
+                String::new(),
+            );
+            return HttpResponse::Ok().json(btc_balance);
+        }
+        return HttpResponse::InternalServerError().json("Serialization error");
+    }
+    return HttpResponse::BadRequest().into();
 }
 
 #[post("/brcbalance")]
 async fn brc20_balance(address: String) -> impl Responder {
-    let url = "https://explorerl2-fluffy-bob-7mjgi9pmtg.t.conduit.xyz/api?module=account&action=eth_get_balance&address=".to_string() + &address;
-    let mut vec = Vec::new();
-    let balance = BtcBalance {
-        ticker: String::from("ORDI"),
-        balance: String::from("18000"),
-        balance_in_usd: String::from("26000"),
-        network: String::from("testnet"),
-    };
-    vec.push(balance.clone());
-    vec.push(balance);
-    HttpResponse::Ok().json(vec)
+    // let url = "https://explorerl2-fluffy-bob-7mjgi9pmtg.t.conduit.xyz/api?module=account&action=eth_get_balance&address=".to_string() + &address;
+    // let mut vec = Vec::new();
+    // let balance = BtcBalance {
+    //     ticker: String::from("ORDI"),
+    //     balance: String::from("18000"),
+    //     balance_in_usd: String::from("26000"),
+    //     network: String::from("testnet"),
+    // };
+    // vec.push(balance.clone());
+    // vec.push(balance);
+    HttpResponse::Ok()
 }
 
 pub fn config(conf: &mut web::ServiceConfig) {
