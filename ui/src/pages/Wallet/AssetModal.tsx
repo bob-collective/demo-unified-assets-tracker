@@ -1,6 +1,5 @@
 import { CTA, Modal, ModalBody, ModalHeader, ModalProps } from '@interlay/ui';
-import { usePublicClient } from 'wagmi';
-import { Balance, useBalances } from '../../hooks/useBalances';
+import { Balance, } from '../../hooks/useBalances';
 import { HexString } from '../../types';
 import { useState } from 'react';
 
