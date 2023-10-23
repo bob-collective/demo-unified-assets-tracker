@@ -1,3 +1,4 @@
+pub mod coingecko;
 mod handler;
 mod model;
 mod response;
