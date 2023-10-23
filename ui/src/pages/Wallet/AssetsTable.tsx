@@ -6,6 +6,7 @@ import { Balance, Balances } from '../../hooks/useBalances';
 import { AssetModal } from './AssetModal';
 import { HexString } from '../../types';
 import { toBaseAmountFromDecimals } from '../../utils/currencies';
+import { WalletClient } from 'viem';
 
 const AmountCell = ({ amount, valueUSD, ticker }: { amount: string; ticker: string; valueUSD?: number }) => (
   <Flex alignItems='flex-start' direction='column'>
@@ -44,6 +45,7 @@ type Props = {
   balances: Balances | undefined;
   evmAccount?: HexString;
   bitcoinAddress?: string;
+  walletClient?: WalletClient;
   refetchBalances: () => void;
 };
 
@@ -51,7 +53,7 @@ type InheritAttrs = Omit<TableProps, keyof Props | 'columns' | 'rows'>;
 
 type AssetsTableProps = Props & InheritAttrs;
 
-const AssetsTable = ({ balances, refetchBalances, evmAccount, bitcoinAddress, ...props }: AssetsTableProps): JSX.Element => {
+const AssetsTable = ({ balances, refetchBalances, evmAccount, bitcoinAddress, walletClient, ...props }: AssetsTableProps): JSX.Element => {
   const [assetModal, setAssetModal] = useState<{
     isOpen: boolean;
     type: 'send' | 'receive';
@@ -116,6 +118,7 @@ const AssetsTable = ({ balances, refetchBalances, evmAccount, bitcoinAddress, ..
           balance={assetModal.balance}
           evmAccount={evmAccount}
           bitcoinAddress={bitcoinAddress}
+          walletClient={walletClient}
         />
       )}
     </div>

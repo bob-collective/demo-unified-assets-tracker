@@ -52,7 +52,7 @@ type Balances = {
   [ticker: string]: Balance;
 };
 
-const apiUrl = 'localhost:8000';
+const apiUrl = 'http://localhost:8000';
 
 const fetchFromApi = async (path: string, body: string) => {
   const res = await fetch(`${apiUrl}${path}`, {
@@ -81,7 +81,7 @@ const getErc20Balances = async (publicClient: PublicClient, address?: HexString)
   }, {} as Erc20Balances);
 };
 
-const useBalances = (evmAccount, publicClient) => {
+const useBalances = (evmAccount, bitcoinAddress, publicClient) => {
   // TODO: add transfer event listener and update balance on transfer in/out
   const { data: erc20Balances, ...erc20QueryResult } = useQuery({
     queryKey: ['erc20-balances', evmAccount],
@@ -111,12 +111,46 @@ const useBalances = (evmAccount, publicClient) => {
     queryKey: ['brc20-balances', evmAccount],
     enabled: !!evmAccount && !!publicClient,
     queryFn: async () => {
-      // todo: call api
+      // TODO: fix - not working because of cors setting
+      // const response = await fetchFromApi("/api/btcbalance", bitcoinAddress);
+      // console.log(response)
+
+      return {
+        "ORDI": {
+          type: "BRC20",
+          amount: 1000000000000,
+          decimals: 9
+        },
+        "DFUK": {
+          type: "BRC20",
+          amount: 1753783234575,
+          decimals: 8
+        }
+      }
     },
     refetchInterval: REFETCH_INTERVAL.MINUTE
   });
 
-  const balances = useMemo(() => ({ ...(erc20Balances || {}), ...(ethBalance || {}) }), [erc20Balances, ethBalance]);
+  const { data: btcBalance, ...btcQueryResult } = useQuery({
+    queryKey: ['btc-balance', evmAccount],
+    enabled: !!evmAccount && !!publicClient,
+    queryFn: async () => {
+      const res = await fetch(`https://mempool.space/testnet/api/address/${bitcoinAddress}`);
+      const resJson = await res.json();
+      const chainBalance = resJson.chain_stats.funded_txo_sum - resJson.chain_stats.spent_txo_sum;
+      const mempoolBalance =resJson.mempool_stats.funded_txo_sum - resJson.mempool_stats.spent_txo_sum;
+      return {
+        BTC: {
+          amount: chainBalance + mempoolBalance,
+          decimals: 8,
+          type: 'BTC'
+        } as const
+      };
+    },
+    refetchInterval: REFETCH_INTERVAL.MINUTE
+  });
+
+  const balances = useMemo(() => ({ ...(erc20Balances || {}), ...(ethBalance || {}), ...(brc20Balance || {}), ...(btcBalance || {}) }), [brc20Balance, btcBalance, erc20Balances, ethBalance]);
 
   const refetchBalances = () => {
     //todo
