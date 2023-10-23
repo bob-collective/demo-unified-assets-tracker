@@ -45,13 +45,13 @@ impl BtcBalance {
             balance,
             balance_in_usd,
             network: String::from("testnet"),
-            decimals: "".to_string(),
+            decimals: "0".to_string(),
         }
     }
 
     pub fn default() -> Self {
         BtcBalance {
-            ticker: "100000000".to_string(),
+            ticker: "".to_string(),
             balance: String::new(),
             balance_in_usd: String::new(),
             network: String::from("testnet"),
