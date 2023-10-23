@@ -54,7 +54,7 @@ impl BtcBalance {
             ticker: "".to_string(),
             balance: String::new(),
             unit_price_in_usd: String::new(),
-            network: String::from("testnet"),
+            network: String::from("mainnet"),
             decimals: "".to_string(),
         }
     }

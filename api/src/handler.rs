@@ -1,8 +1,8 @@
+use crate::coingecko::get_value_in_usd;
 use crate::response::{BtcBalance, EthBalance, TokenInfo};
 use actix_web::{post, web, HttpResponse, Responder};
 use num_bigint::BigUint;
 use num_traits::Num;
-use crate::coingecko::get_value_in_usd;
 
 #[post("/tokenbalancel2")]
 async fn get_token_balance_on_l2(address: String) -> impl Responder {
@@ -26,7 +26,8 @@ async fn get_token_balance_on_l2(address: String) -> impl Responder {
                 let token_type = &item["type"];
                 // add usd price as well
 
-                let unit_price_in_usd = get_value_in_usd(&symbol.to_string().replace("\"", "").to_lowercase()).await;
+                let unit_price_in_usd =
+                    get_value_in_usd(&symbol.to_string().replace("\"", "").to_lowercase()).await;
 
                 let token_info: TokenInfo = TokenInfo {
                     balance: balance.to_string().replace("\"", ""),
@@ -68,6 +69,8 @@ async fn get_token_balance_on_l1(address: String) -> impl Responder {
                 let symbol = &item["symbol"];
                 let token_type = &item["type"];
                 // add usd price as well
+                let unit_price_in_usd =
+                    get_value_in_usd(&symbol.to_string().replace("\"", "").to_lowercase()).await;
 
                 let token_info: TokenInfo = TokenInfo {
                     balance: balance.to_string().replace("\"", ""),
@@ -76,7 +79,7 @@ async fn get_token_balance_on_l1(address: String) -> impl Responder {
                     name: name.to_string().replace("\"", ""),
                     symbol: symbol.to_string().replace("\"", ""),
                     token_type: token_type.to_string().replace("\"", ""),
-                    unit_price_in_usd: String::new(),
+                    unit_price_in_usd,
                 };
                 vec.push(token_info);
             }
@@ -236,10 +239,12 @@ async fn brc20_balance(address: String) -> impl Responder {
                     .replace("\"", "");
                 let ticker = json_result["data"]["ticker"].to_string().replace("\"", "");
 
+                let unit_price_in_usd = get_value_in_usd(&ticker.to_lowercase()).await;
+
                 if balance == String::from("null") {
                     println!(" -- Skipping As no balance --");
                 } else {
-                    let brc20 = BtcBalance::for_brc20(ticker, balance, String::new());
+                    let brc20 = BtcBalance::for_brc20(ticker, balance, unit_price_in_usd);
                     responses.push(brc20);
                 }
             } else {
