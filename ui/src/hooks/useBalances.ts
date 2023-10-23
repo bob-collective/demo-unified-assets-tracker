@@ -1,14 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
-import Big from 'big.js';
-import { useCallback, useMemo } from 'react';
-import { useAccount, usePublicClient } from 'wagmi';
-import { CurrencyTicker, Erc20Currencies, Erc20CurrencyTicker, currencies } from '../constants';
+import { useMemo } from 'react';
+import { Erc20Currencies, Erc20CurrencyTicker } from '../constants';
 import { REFETCH_INTERVAL } from '../constants/query';
 import { ERC20Abi } from '../contracts/abi/ERC20.abi';
-import { Amount } from '../utils/amount';
-import { isBitcoinTicker } from '../utils/currencies';
-import { useGetOrders } from './fetchers/useGetOrders';
 import { PublicClient } from 'viem';
 import { HexString } from '../types';
 
@@ -111,22 +106,17 @@ const useBalances = (evmAccount, bitcoinAddress, publicClient) => {
     queryKey: ['brc20-balances', evmAccount],
     enabled: !!evmAccount && !!publicClient,
     queryFn: async () => {
-      // TODO: fix - not working because of cors setting
-      // const response = await fetchFromApi("/api/btcbalance", bitcoinAddress);
-      // console.log(response)
+      const response = await fetchFromApi('/api/brcbalance', bitcoinAddress);
+      const brc20BalancesObject = response.reduce(
+        (result, balance) => ({
+          ...result,
+          [balance.ticker]: { amount: BigInt(balance.balance), type: 'BRC20', decimals: 18 }
+        }),
+        {}
+      );
+      console.log(response);
 
-      return {
-        "ORDI": {
-          type: "BRC20",
-          amount: 1000000000000,
-          decimals: 9
-        },
-        "DFUK": {
-          type: "BRC20",
-          amount: 1753783234575,
-          decimals: 8
-        }
-      }
+      return brc20BalancesObject;
     },
     refetchInterval: REFETCH_INTERVAL.MINUTE
   });
@@ -138,7 +128,7 @@ const useBalances = (evmAccount, bitcoinAddress, publicClient) => {
       const res = await fetch(`https://mempool.space/testnet/api/address/${bitcoinAddress}`);
       const resJson = await res.json();
       const chainBalance = resJson.chain_stats.funded_txo_sum - resJson.chain_stats.spent_txo_sum;
-      const mempoolBalance =resJson.mempool_stats.funded_txo_sum - resJson.mempool_stats.spent_txo_sum;
+      const mempoolBalance = resJson.mempool_stats.funded_txo_sum - resJson.mempool_stats.spent_txo_sum;
       return {
         BTC: {
           amount: chainBalance + mempoolBalance,
@@ -150,35 +140,17 @@ const useBalances = (evmAccount, bitcoinAddress, publicClient) => {
     refetchInterval: REFETCH_INTERVAL.MINUTE
   });
 
-  const balances = useMemo(() => ({ ...(erc20Balances || {}), ...(ethBalance || {}), ...(brc20Balance || {}), ...(btcBalance || {}) }), [brc20Balance, btcBalance, erc20Balances, ethBalance]);
+  const balances = useMemo(
+    () => ({ ...(erc20Balances || {}), ...(ethBalance || {}), ...(btcBalance || {}), ...(brc20Balance || {}) }),
+    [brc20Balance, btcBalance, erc20Balances, ethBalance]
+  );
 
   const refetchBalances = () => {
-    //todo
+    erc20QueryResult.refetch();
+    ethQueryResult.refetch();
+    btcQueryResult.refetch();
+    brc20QueryResult.refetch();
   };
-  // const getBalance = useCallback(
-  //   (ticker: CurrencyTicker) => {
-  //     const currency = currencies[ticker];
-
-  //     if (isBitcoinTicker(ticker) || data?.[ticker] === undefined) {
-  //       return new Amount(currency, 0);
-  //     }
-
-  //     const current = new Amount(currencies[ticker], Number(data[ticker]));
-
-  //     const toDeduct = orders.owned.reduce(
-  //       (acc, order) =>
-  //         order.offeringCurrency.ticker === currency.ticker
-  //           ? acc.add(new Amount(order.offeringCurrency, Number(order.availableLiquidity)).toBig())
-  //           : acc,
-  //       new Big(0)
-  //     );
-
-  //     const balance = current.toBig().minus(toDeduct);
-
-  //     return balance.gt(0) ? new Amount(currency, balance, true) : new Amount(currency, 0);
-  //   },
-  //   [data, orders.owned]
-  // );
 
   return { balances, refetchBalances };
 };
