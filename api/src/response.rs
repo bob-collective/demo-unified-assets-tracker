@@ -25,23 +25,37 @@ pub struct BtcBalance {
     pub balance: String,
     pub balance_in_usd: String,
     pub network: String,
+    pub decimals: String,
 }
 
 impl BtcBalance {
-    pub fn new(balance: String,balance_in_usd:String ) -> Self {
+    pub fn new(balance: String, balance_in_usd: String) -> Self {
         BtcBalance {
-            ticker: "100000000".to_string(),
+            ticker: "btc".to_string(),
             balance,
             balance_in_usd,
             network: String::from("testnet"),
+            decimals: "100000000".to_string(),
         }
     }
+
+    pub fn for_brc20(ticker: String, balance: String, balance_in_usd: String) -> Self {
+        BtcBalance {
+            ticker,
+            balance,
+            balance_in_usd,
+            network: String::from("testnet"),
+            decimals: "".to_string(),
+        }
+    }
+
     pub fn default() -> Self {
         BtcBalance {
             ticker: "100000000".to_string(),
             balance: String::new(),
             balance_in_usd: String::new(),
             network: String::from("testnet"),
+            decimals: "".to_string(),
         }
     }
 }
