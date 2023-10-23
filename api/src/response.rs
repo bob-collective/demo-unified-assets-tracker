@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct EthBalance {
     pub balance: String,
-    pub balance_in_usd: String,
+    pub unit_price_in_usd: String,
     pub network: String,
 }
 
@@ -12,7 +12,7 @@ impl EthBalance {
     pub fn default() -> Self {
         EthBalance {
             balance: String::new(),
-            balance_in_usd: String::new(),
+            unit_price_in_usd: String::new(),
             network: String::from("l1-bob"),
         }
     }
@@ -23,38 +23,38 @@ impl EthBalance {
 pub struct BtcBalance {
     pub ticker: String,
     pub balance: String,
-    pub balance_in_usd: String,
+    pub unit_price_in_usd: String,
     pub network: String,
     pub decimals: String,
 }
 
 impl BtcBalance {
-    pub fn new(balance: String, balance_in_usd: String) -> Self {
+    pub fn new(balance: String, unit_price_in_usd: String) -> Self {
         BtcBalance {
             ticker: "btc".to_string(),
             balance,
-            balance_in_usd,
-            network: String::from("testnet"),
+            unit_price_in_usd,
+            network: String::from("mainnet"),
             decimals: "8".to_string(),
         }
     }
 
-    pub fn for_brc20(ticker: String, balance: String, balance_in_usd: String) -> Self {
+    pub fn for_brc20(ticker: String, balance: String, unit_price_in_usd: String) -> Self {
         BtcBalance {
             ticker,
             balance,
-            balance_in_usd,
-            network: String::from("testnet"),
-            decimals: "".to_string(),
+            unit_price_in_usd,
+            network: String::from("mainnet"),
+            decimals: "0".to_string(),
         }
     }
 
     pub fn default() -> Self {
         BtcBalance {
-            ticker: "100000000".to_string(),
+            ticker: "".to_string(),
             balance: String::new(),
-            balance_in_usd: String::new(),
-            network: String::from("testnet"),
+            unit_price_in_usd: String::new(),
+            network: String::from("mainnet"),
             decimals: "".to_string(),
         }
     }
@@ -68,5 +68,5 @@ pub struct TokenInfo {
     pub name: String,
     pub symbol: String,
     pub token_type: String,
-    pub balance_in_usd: String,
+    pub unit_price_in_usd: String,
 }

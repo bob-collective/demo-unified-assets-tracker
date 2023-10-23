@@ -1,3 +1,4 @@
+use crate::coingecko::get_value_in_usd;
 use crate::response::{BtcBalance, EthBalance, TokenInfo};
 use actix_web::{post, web, HttpResponse, Responder};
 use num_bigint::BigUint;
@@ -25,6 +26,9 @@ async fn get_token_balance_on_l2(address: String) -> impl Responder {
                 let token_type = &item["type"];
                 // add usd price as well
 
+                let unit_price_in_usd =
+                    get_value_in_usd(&symbol.to_string().replace("\"", "").to_lowercase()).await;
+
                 let token_info: TokenInfo = TokenInfo {
                     balance: balance.to_string().replace("\"", ""),
                     contract_address: contract_address.to_string().replace("\"", ""),
@@ -32,7 +36,7 @@ async fn get_token_balance_on_l2(address: String) -> impl Responder {
                     name: name.to_string().replace("\"", ""),
                     symbol: symbol.to_string().replace("\"", ""),
                     token_type: token_type.to_string().replace("\"", ""),
-                    balance_in_usd: String::new(),
+                    unit_price_in_usd,
                 };
                 vec.push(token_info);
             }
@@ -56,7 +60,6 @@ async fn get_token_balance_on_l1(address: String) -> impl Responder {
         if http_response.error().is_some() {
             return http_response;
         }
-        // panic!("response: {:?}", response_result.json::<serde_json::Value>().await);
         if let Ok(json_result) = response_result.json::<serde_json::Value>().await {
             for item in json_result["result"].as_array().unwrap_or(&vec![]) {
                 let balance = &item["balance"];
@@ -66,6 +69,8 @@ async fn get_token_balance_on_l1(address: String) -> impl Responder {
                 let symbol = &item["symbol"];
                 let token_type = &item["type"];
                 // add usd price as well
+                let unit_price_in_usd =
+                    get_value_in_usd(&symbol.to_string().replace("\"", "").to_lowercase()).await;
 
                 let token_info: TokenInfo = TokenInfo {
                     balance: balance.to_string().replace("\"", ""),
@@ -74,7 +79,7 @@ async fn get_token_balance_on_l1(address: String) -> impl Responder {
                     name: name.to_string().replace("\"", ""),
                     symbol: symbol.to_string().replace("\"", ""),
                     token_type: token_type.to_string().replace("\"", ""),
-                    balance_in_usd: String::new(),
+                    unit_price_in_usd,
                 };
                 vec.push(token_info);
             }
@@ -101,9 +106,11 @@ async fn get_eth_balance_on_l1(address: String) -> impl Responder {
             let hex_balance_trimmed = hex_balance.trim_matches('\\').trim_matches('\"');
             let hex_balance_trimmed = hex_balance_trimmed.trim_start_matches("0x");
             if let Ok(eth_balance) = BigUint::from_str_radix(hex_balance_trimmed, 16) {
+                let unit_price_in_usd = get_value_in_usd("eth").await;
+
                 let eth_balance = EthBalance {
                     balance: eth_balance.to_string(),
-                    balance_in_usd: String::new(),
+                    unit_price_in_usd,
                     network: String::from("l1-bob"),
                 };
                 return HttpResponse::Ok().json(eth_balance);
@@ -132,9 +139,11 @@ async fn get_eth_balance_on_l2(address: String) -> impl Responder {
             let hex_balance_trimmed = hex_balance.trim_matches('\\').trim_matches('\"');
             let hex_balance_trimmed = hex_balance_trimmed.trim_start_matches("0x");
             if let Ok(eth_balance) = BigUint::from_str_radix(hex_balance_trimmed, 16) {
+                let unit_price_in_usd = get_value_in_usd("eth").await;
+
                 let eth_balance = EthBalance {
                     balance: eth_balance.to_string(),
-                    balance_in_usd: String::new(),
+                    unit_price_in_usd,
                     network: String::from("l2-bob"),
                 };
                 return HttpResponse::Ok().json(eth_balance);
@@ -170,8 +179,9 @@ async fn btc_balance(address: String) -> impl Responder {
             if balance == String::from("null") {
                 return HttpResponse::Ok().json(BtcBalance::default());
             }
+            let value_in_usd = get_value_in_usd("btc").await;
+            let btc_balance = BtcBalance::new(balance, value_in_usd);
 
-            let btc_balance = BtcBalance::new(balance, String::new());
             return HttpResponse::Ok().json(btc_balance);
         }
         return HttpResponse::InternalServerError().json("Serialization error");
@@ -229,10 +239,12 @@ async fn brc20_balance(address: String) -> impl Responder {
                     .replace("\"", "");
                 let ticker = json_result["data"]["ticker"].to_string().replace("\"", "");
 
+                let unit_price_in_usd = get_value_in_usd(&ticker.to_lowercase()).await;
+
                 if balance == String::from("null") {
                     println!(" -- Skipping As no balance --");
                 } else {
-                    let brc20 = BtcBalance::for_brc20(ticker, balance, String::new());
+                    let brc20 = BtcBalance::for_brc20(ticker, balance, unit_price_in_usd);
                     responses.push(brc20);
                 }
             } else {
