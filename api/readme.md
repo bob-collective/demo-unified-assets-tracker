@@ -157,4 +157,98 @@ curl --location --request POST 'http://localhost:8000/api/brcbalance' \
         "balance_in_usd": "26000",
         "network": "testnet"
     }
-]```
+]
+```
+--------
+
+
+### API Endpoint: `/api/btcbalance`
+
+**HTTP Method:** `POST`
+
+**Request Example:**
+
+```shell
+curl --location --request POST 'http://localhost:8000/api/btcbalance' \
+--header 'Content-Type: text/plain' \
+--data-raw 'bc1q8u9thhxvkjw9t8tf0sj6k0vwmk7jstc9z0f3at0r5xunxxp9f0pqmetg7x'
+```
+
+
+```json
+{
+  "ticker": "btc",
+  "balance": "15834",
+  "balance_in_usd": "",
+  "network": "testnet",
+  "decimals": "100000000"
+}
+```
+
+
+### API Endpoint: `/api/brcbalance`
+
+**HTTP Method:** `POST`
+
+**Request Example:**
+
+```shell
+curl --location --request POST 'http://localhost:8000/api/brcbalance' \
+--header 'Content-Type: text/plain' \
+--data-raw 'bc1q8u9thhxvkjw9t8tf0sj6k0vwmk7jstc9z0f3at0r5xunxxp9f0pqmetg7x'
+```
+
+
+```json
+[
+  {
+    "ticker": "ordi",
+    "balance": "644000",
+    "balance_in_usd": "",
+    "network": "testnet",
+    "decimals": ""
+  },
+  {
+    "ticker": "meme",
+    "balance": "0",
+    "balance_in_usd": "",
+    "network": "testnet",
+    "decimals": ""
+  },
+  {
+    "ticker": "punk",
+    "balance": "0",
+    "balance_in_usd": "",
+    "network": "testnet",
+    "decimals": ""
+  },
+  {
+    "ticker": "pepe",
+    "balance": "0",
+    "balance_in_usd": "",
+    "network": "testnet",
+    "decimals": ""
+  },
+  {
+    "ticker": "bruh",
+    "balance": "0",
+    "balance_in_usd": "",
+    "network": "testnet",
+    "decimals": ""
+  },
+  {
+    "ticker": "sats",
+    "balance": "0",
+    "balance_in_usd": "",
+    "network": "testnet",
+    "decimals": ""
+  },
+  {
+    "ticker": "sato",
+    "balance": "0",
+    "balance_in_usd": "",
+    "network": "testnet",
+    "decimals": ""
+  }
+]
+```
