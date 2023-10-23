@@ -3,10 +3,12 @@ use crate::response::{BtcBalance, EthBalance, TokenInfo};
 use actix_web::{post, web, HttpResponse, Responder};
 use num_bigint::BigUint;
 use num_traits::Num;
+use std::fs;
 
 #[post("/tokenbalancel2")]
 async fn get_token_balance_on_l2(address: String) -> impl Responder {
     // Construct the complete URL
+    // Fixme: Hardcoded endpoint pass through cli
     let url = "https://explorerl2-fluffy-bob-7mjgi9pmtg.t.conduit.xyz/api?module=account&action=tokenlist&address=".to_string() + &address;
 
     let mut vec = Vec::new();
@@ -51,10 +53,12 @@ async fn get_token_balance_on_l2(address: String) -> impl Responder {
 #[post("/tokenbalancel1")]
 async fn get_token_balance_on_l1(address: String) -> impl Responder {
     // Construct the complete URL
+    // Fixme: Hardcoded endpoint pass through cli
     let url = "https://explorerl1-fluffy-bob-7mjgi9pmtg.t.conduit.xyz/api?module=account&action=tokenlist&address=".to_string() + &address;
 
     let mut vec = Vec::new();
     // Send an HTTP GET request
+    // Fixme: Duplicated codeblock
     if let Ok(response_result) = reqwest::get(&url).await {
         let http_response = HttpResponse::new(response_result.status());
         if http_response.error().is_some() {
@@ -161,7 +165,7 @@ async fn get_eth_balance_on_l2(address: String) -> impl Responder {
 async fn btc_balance(address: String) -> impl Responder {
     // Fixme change to testnet
     let url = "https://open-api.unisat.io/v1/indexer/address/".to_string() + &address + "/balance";
-    let token = "4f35426215d7231021bf5c32a1187f86ef5a57eaf2655c28935868f05bb7a677".to_string();
+    let token = fs::read_to_string("unisat_api.txt").unwrap().lines().next().unwrap().to_string();
 
     if let Ok(response_result) = reqwest::Client::new()
         .get(&url)
@@ -191,7 +195,7 @@ async fn btc_balance(address: String) -> impl Responder {
 
 async fn brc20_tokens_supported_by_indexer() -> Vec<String> {
     let url = "https://open-api.unisat.io/v1/indexer/brc20/list".to_string();
-    let token = "4f35426215d7231021bf5c32a1187f86ef5a57eaf2655c28935868f05bb7a677".to_string();
+    let token = fs::read_to_string("unisat_api.txt").unwrap().lines().next().unwrap().to_string();
     let mut brc20 = Vec::new();
 
     if let Ok(response_result) = reqwest::Client::new()
@@ -211,7 +215,7 @@ async fn brc20_tokens_supported_by_indexer() -> Vec<String> {
 
 #[post("/brcbalance")]
 async fn brc20_balance(address: String) -> impl Responder {
-    let token = "4f35426215d7231021bf5c32a1187f86ef5a57eaf2655c28935868f05bb7a677".to_string();
+    let token = fs::read_to_string("unisat_api.txt").unwrap().lines().next().unwrap().to_string();
     let tokens = brc20_tokens_supported_by_indexer().await;
     let client = reqwest::Client::new();
 
