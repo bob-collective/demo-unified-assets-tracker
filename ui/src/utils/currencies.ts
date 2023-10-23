@@ -22,6 +22,10 @@ const getErc20CurrencyFromContractAddress = (address: HexString): Erc20Currency 
   return currency;
 };
 
+export const toAtomicAmountFromDecimals = (amount: string, decimals:  number) => {
+  return BigInt(new Big(amount).mul(new Big(10).pow(decimals)).toString());
+}
+
 // TODO: handle float amounts too, now handles only integers.
 const toAtomicAmount = (amount: string, ticker: CurrencyTicker): bigint => {
   const { decimals } = currencies[ticker];
