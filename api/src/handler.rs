@@ -230,7 +230,7 @@ async fn brc20_balance(address: String) -> impl Responder {
                 let ticker = json_result["data"]["ticker"].to_string().replace("\"", "");
 
                 if balance == String::from("null") {
-                    println!(" -- Skipping --");
+                    println!(" -- Skipping As no balance --");
                 } else {
                     let brc20 = BtcBalance::for_brc20(ticker, balance, String::new());
                     responses.push(brc20);

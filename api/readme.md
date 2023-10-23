@@ -124,9 +124,11 @@ curl --location --request POST 'http://localhost:8000/api/btcbalance' \
 
 ```json
 {
-    "balance": "18000",
-    "balance_in_usd": "26000",
-    "network": "testnet"
+  "ticker": "btc",
+  "balance": "15834",
+  "balance_in_usd": "",
+  "network": "testnet",
+  "decimals": "8"
 }
 ```
 

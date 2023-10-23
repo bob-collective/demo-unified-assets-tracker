@@ -35,7 +35,7 @@ impl BtcBalance {
             balance,
             balance_in_usd,
             network: String::from("testnet"),
-            decimals: "100000000".to_string(),
+            decimals: "8".to_string(),
         }
     }
 
