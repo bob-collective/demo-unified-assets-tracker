@@ -1,7 +1,7 @@
+pub mod coingecko;
 mod handler;
 mod model;
 mod response;
-pub mod coingecko;
 
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
