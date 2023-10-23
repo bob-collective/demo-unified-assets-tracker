@@ -163,7 +163,7 @@ async fn get_eth_balance_on_l2(address: String) -> impl Responder {
 
 #[post("/btcbalance")]
 async fn btc_balance(address: String) -> impl Responder {
-    // Fixme change to testnet
+    // Fixme change to testnet once it is available
     let url = "https://open-api.unisat.io/v1/indexer/address/".to_string() + &address + "/balance";
     let token = fs::read_to_string("unisat_api_key.txt").unwrap().lines().next().unwrap().to_string();
 
@@ -194,6 +194,7 @@ async fn btc_balance(address: String) -> impl Responder {
 }
 
 async fn brc20_tokens_supported_by_indexer() -> Vec<String> {
+    // Fixme change to testnet once it is available
     let url = "https://open-api.unisat.io/v1/indexer/brc20/list".to_string();
     let token = fs::read_to_string("unisat_api_key.txt").unwrap().lines().next().unwrap().to_string();
     let mut brc20 = Vec::new();
@@ -221,6 +222,7 @@ async fn brc20_balance(address: String) -> impl Responder {
 
     let mut responses = Vec::new();
     for ticker in &tokens {
+        // Fixme change to testnet once it is available
         let url = "https://open-api.unisat.io/v1/indexer/address/".to_string()
             + &address
             + "/brc20/"
