@@ -18,8 +18,6 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("http://localhost:3000")
-            .allowed_origin("http://localhost:3000/")
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![
                 header::CONTENT_TYPE,
@@ -28,7 +26,6 @@ async fn main() -> std::io::Result<()> {
             ])
             .supports_credentials();
         App::new()
-            // .app_data(app_data.clone())
             .configure(handler::config)
             .wrap(cors)
             .wrap(Logger::default())
@@ -37,6 +34,3 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
-
-// ToDos
-// restart the
