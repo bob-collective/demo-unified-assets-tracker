@@ -6,11 +6,11 @@ This project consists of 2 components: ui and api. In order to run it successful
 
 ### Running the API
 
-1. [Obtain Unisat API key to use their service](https://docs.unisat.io/dev/open-api#getting-an-api-key). And put the key in `unisat_api_key.txt` file.
+1. [Obtain Unisat API key to use their service](https://docs.unisat.io/dev/open-api#getting-an-api-key). And put the key in `api/unisat_api_key.txt` file.
 2. Move to api directory `$ cd api/`
 3. Compile and run the service with `cargo run`
 4. Api server should be now running at `localhost:8000`
-5. Api documentation can be found in `api` directory.  
+5. Api documentation can be found in `api/README.md` directory.  
 
 
 ### Installing the UI project
