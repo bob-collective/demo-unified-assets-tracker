@@ -78,7 +78,7 @@ const SendAssetForm = ({ balance, ticker, walletClient, evmAccount, onSubmit }: 
   return (
     <form onSubmit={form.handleSubmit}>
       <Flex direction='column' gap='spacing4'>
-        <P size='s'>Input the details and values of your order's assets</P>
+        <P size='s'>Input the amount and recipient of the asset transfer.</P>
         <TokenInput
           ticker={ticker}
           label='Amount'
