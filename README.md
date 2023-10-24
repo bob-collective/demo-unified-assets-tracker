@@ -1,4 +1,4 @@
-# BOB Collective: Portfolio tracker hack
+# BOB Collective: Unified assets tracker demo
 
 Simple app that allows tracking and transfers of both evm and bitcoin assets in unified manner using MetaMask bitcoin snap extension.
 
