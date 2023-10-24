@@ -116,7 +116,6 @@ const useBalances = (evmAccount?: HexString, bitcoinAddress?: string, publicClie
         }),
         {}
       );
-      console.log(response);
 
       return brc20BalancesObject;
     },
