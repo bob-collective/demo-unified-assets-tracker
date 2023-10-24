@@ -53,7 +53,14 @@ type InheritAttrs = Omit<TableProps, keyof Props | 'columns' | 'rows'>;
 
 type AssetsTableProps = Props & InheritAttrs;
 
-const AssetsTable = ({ balances, refetchBalances, evmAccount, bitcoinAddress, walletClient, ...props }: AssetsTableProps): JSX.Element => {
+const AssetsTable = ({
+  balances,
+  refetchBalances,
+  evmAccount,
+  bitcoinAddress,
+  walletClient,
+  ...props
+}: AssetsTableProps): JSX.Element => {
   const [assetModal, setAssetModal] = useState<{
     isOpen: boolean;
     type: 'send' | 'receive';
@@ -86,7 +93,9 @@ const AssetsTable = ({ balances, refetchBalances, evmAccount, bitcoinAddress, wa
             return {
               id: `${ticker}-${balance.type}`,
               asset: <AssetCell name={ticker} tickers={[ticker]} />,
-              balance: <AmountCell amount={toBaseAmountFromDecimals(balance.amount, balance.decimals)} ticker={ticker} />,
+              balance: (
+                <AmountCell amount={toBaseAmountFromDecimals(balance.amount, balance.decimals)} ticker={ticker} />
+              ),
               action: (
                 <Flex justifyContent='flex-end' gap='spacing4' alignItems='center'>
                   <CTA onPress={() => handleOpenSendAssetModal(ticker, balance)} size='small'>
