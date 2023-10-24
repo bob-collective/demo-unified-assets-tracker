@@ -3,9 +3,7 @@ import { Header } from '../../components/Layout/Header';
 import { useConnect } from '../../hooks/useConnect';
 import { useBalances } from '../../hooks/useBalances';
 
-type Props = {}
-
-const Wallet = (props: Props) => {
+const Wallet = () => {
   const { connect, evmAccount, bitcoinAddress, publicClient, walletClient } = useConnect();
   const {balances, refetchBalances} = useBalances(evmAccount, bitcoinAddress, publicClient);
   return (

@@ -76,12 +76,12 @@ const getErc20Balances = async (publicClient: PublicClient, address?: HexString)
   }, {} as Erc20Balances);
 };
 
-const useBalances = (evmAccount, bitcoinAddress, publicClient) => {
+const useBalances = (evmAccount?: HexString, bitcoinAddress?: string, publicClient?: PublicClient) => {
   // TODO: add transfer event listener and update balance on transfer in/out
   const { data: erc20Balances, ...erc20QueryResult } = useQuery({
     queryKey: ['erc20-balances', evmAccount],
     enabled: !!evmAccount && !!publicClient,
-    queryFn: () => getErc20Balances(publicClient, evmAccount),
+    queryFn: () => publicClient && getErc20Balances(publicClient, evmAccount),
     refetchInterval: REFETCH_INTERVAL.MINUTE
   });
 
@@ -89,7 +89,7 @@ const useBalances = (evmAccount, bitcoinAddress, publicClient) => {
     queryKey: ['eth-balances', evmAccount],
     enabled: !!evmAccount && !!publicClient,
     queryFn: async () => {
-      if (!evmAccount) return;
+      if (!evmAccount || !publicClient) return;
       const ethBalance = await publicClient.getBalance({ address: evmAccount, blockTag: 'safe' });
       return {
         ETH: {
@@ -106,9 +106,11 @@ const useBalances = (evmAccount, bitcoinAddress, publicClient) => {
     queryKey: ['brc20-balances', evmAccount],
     enabled: !!evmAccount && !!publicClient,
     queryFn: async () => {
+      if (!bitcoinAddress) return;
       const response = await fetchFromApi('/api/brcbalance', bitcoinAddress);
       const brc20BalancesObject = response.reduce(
-        (result, balance) => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (result: any, balance: any) => ({
           ...result,
           [balance.ticker]: { amount: BigInt(balance.balance), type: 'BRC20', decimals: 18 }
         }),

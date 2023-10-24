@@ -28,17 +28,17 @@ const AssetCell = ({ name, tickers }: { name: string; tickers: string[] }) => (
   </Flex>
 );
 
-enum OrdersTableColumns {
+enum AssetsTableColumns {
   ASSET = 'asset',
   BALANCE = 'balance',
   ACTION = 'action'
 }
 
-type OrdersTableRow = {
+type AssetsTableRow = {
   id: string;
-  [OrdersTableColumns.ASSET]: ReactNode;
-  [OrdersTableColumns.BALANCE]: ReactNode;
-  [OrdersTableColumns.ACTION]: ReactNode;
+  [AssetsTableColumns.ASSET]: ReactNode;
+  [AssetsTableColumns.BALANCE]: ReactNode;
+  [AssetsTableColumns.ACTION]: ReactNode;
 };
 
 type Props = {
@@ -74,12 +74,12 @@ const AssetsTable = ({ balances, refetchBalances, evmAccount, bitcoinAddress, wa
   const handleCloseModal = () => setAssetModal((s) => ({ ...s, isOpen: false }));
 
   const columns = [
-    { name: 'Asset', id: OrdersTableColumns.ASSET },
-    { name: 'Balance', id: OrdersTableColumns.BALANCE },
-    { name: '', id: OrdersTableColumns.ACTION }
+    { name: 'Asset', id: AssetsTableColumns.ASSET },
+    { name: 'Balance', id: AssetsTableColumns.BALANCE },
+    { name: '', id: AssetsTableColumns.ACTION }
   ];
 
-  const rows: OrdersTableRow[] = useMemo(
+  const rows: AssetsTableRow[] = useMemo(
     () =>
       balances
         ? Object.entries(balances).map(([ticker, balance]) => {
