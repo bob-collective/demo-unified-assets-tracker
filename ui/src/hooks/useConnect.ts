@@ -1,5 +1,5 @@
 import { PublicClient, WalletClient, createPublicClient, createWalletClient, custom, defineChain, http } from 'viem';
-import { Chain } from 'wagmi';
+import { Chain } from 'viem';
 
 import { L2_BLOCK_EXPLORER, L2_CHAIN_ID, L2_MULTICALL3_ADDRESS, L2_RPC_URL, L2_WSS_URL } from '../config';
 import {
@@ -70,7 +70,7 @@ const getClientsAndAccounts = async () => {
   const xpub = await getExtendedPublicKey(bitcoinNetwork, BitcoinScriptType.P2WPKH);
   // derive public address from xpub
   const bitcoinAddress = addressFromExtPubKey({ extPubKey: xpub.xpub, network: bitcoinNetwork });
-  console.log(publicClient, walletClient, evmAddress, bitcoinAddress);
+
   return { publicClient, walletClient, evmAddress, bitcoinAddress: bitcoinAddress?.address, xpub };
 };
 
