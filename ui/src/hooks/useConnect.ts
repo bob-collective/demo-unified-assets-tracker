@@ -7,8 +7,7 @@ import {
   BitcoinScriptType,
   ExtendedPublicKey,
   connect as connectWithBtcSnap,
-  getExtendedPublicKey,
-  updateNetworkInSnap
+  getExtendedPublicKey
 } from '../utils/btcsnap';
 import { addressFromExtPubKey } from '@unspentio/xpub-lib';
 import { useCallback, useEffect, useState } from 'react';
@@ -66,6 +65,7 @@ const getClientsAndAccounts = async () => {
   // } catch {
   //   //
   // }
+
   // get segwit xpub
   const xpub = await getExtendedPublicKey(bitcoinNetwork, BitcoinScriptType.P2WPKH);
   // derive public address from xpub

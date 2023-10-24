@@ -3,8 +3,15 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import truncateEthAddress from 'truncate-eth-address';
 
 import { StyledHeader } from './Layout.styles';
+import { HexString } from '../../types';
 
-const Header = ({evmAccount, connect, bitcoinAddress}) => {
+interface Props {
+  evmAccount?: HexString;
+  connect: () => void;
+  bitcoinAddress?: string;
+}
+
+const Header = ({evmAccount, connect, bitcoinAddress}: Props) => {
 
 
   return (
