@@ -196,7 +196,7 @@ declare global {
 
 const { ethereum } = window;
 
-const snapId = 'npm:btcsnap';
+const snapId = 'npm:@gobob/btcsnap';
 
 export async function connect(cb: (connected: boolean) => void) {
   let connected = false;
